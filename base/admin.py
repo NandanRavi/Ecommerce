@@ -8,13 +8,13 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ["product_id", "product_name"]
     
 class OrderItemsAdmin(admin.ModelAdmin):
-    list_display = ["order", "product"]
+    list_display = ["order", "product__product_id"]
 
 class PaymentDetailsAdmin(admin.ModelAdmin):
     list_display = ["order_number", "payment_id", "amount", "status"]
 
-admin.site.register(CustomUser)
 admin.site.register(Customer)
+admin.site.register(CustomUser)
 admin.site.register(Category)
 admin.site.register(Order)
 admin.site.register(SubCategory)

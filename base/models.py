@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 from .manager import UserManager
 # Create your models here.
 
@@ -31,7 +32,6 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.user.name
-    
     
 
 class Category(models.Model):
@@ -101,6 +101,8 @@ class OrderItems(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
+
+    
     
     
 class PaymentDetails(models.Model):
@@ -128,7 +130,20 @@ class PaymentDetails(models.Model):
             super().save(*args, **kwargs)
     
 
+# class UserPayment(models.Model):
+#     PAYMENT_STATUS_CHOICES = [
+#         ('initiated', 'Initiated'),
+#         ('processing', 'Processing'),
+#         ('completed', 'Completed'),
+#         ('failed', 'Failed'),
+#     ]
     
+#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+#     payment_details = models.ForeignKey(PaymentDetails, on_delete=models.CASCADE)
+#     status = models.CharField(max_length=15, choices=PAYMENT_STATUS_CHOICES, default='initiated')
+#     payment_date = models.DateTimeField(default=timezone.now)
+#     amount_paid = models.FloatField()
+#     description = models.TextField(null=True, blank=True)
 
 
 
