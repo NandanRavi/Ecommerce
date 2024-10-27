@@ -11,7 +11,7 @@ class OrderItemsAdmin(admin.ModelAdmin):
     list_display = ["order", "product"]
 
 class PaymentDetailsAdmin(admin.ModelAdmin):
-    list_display = ["order_number", "payment_id", "amount"]
+    list_display = ["order_number", "payment_id", "amount", "status"]
 
 admin.site.register(CustomUser)
 admin.site.register(Customer)

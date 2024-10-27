@@ -102,13 +102,18 @@ class OrderItems(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     
-
     
 class PaymentDetails(models.Model):
+    STATUS_CHOICES = [
+        ('unpaid', 'Unpaid'),
+        ('success', 'Success'),
+        ('failed', 'Failed'),
+        ('pending', 'Pending'),
+    ]
     order_number = models.ForeignKey(Order, on_delete=models.CASCADE)
     payment_id = models.CharField(max_length=10, unique=True, editable=False)
     amount = models.FloatField(editable=False)
-    status = models.BooleanField(default=None)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='unpaid')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
