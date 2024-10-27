@@ -74,11 +74,7 @@ class Product(models.Model):
         else:
             super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.product_id
     
-    
-
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order_id = models.CharField(max_length=10, unique=True, editable=False)
@@ -105,15 +101,13 @@ class OrderItems(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return self.order.order_id
     
+
     
 class PaymentDetails(models.Model):
     order_number = models.ForeignKey(Order, on_delete=models.CASCADE)
     payment_id = models.CharField(max_length=10, unique=True, editable=False)
-    amount = models.IntegerField(editable=False)
+    amount = models.FloatField(editable=False)
     status = models.BooleanField(default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -121,19 +115,12 @@ class PaymentDetails(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
+            self.amount = sum(item.product.price * item.quantity for item in self.order_number.orderitems_set.all())
             super().save(*args, **kwargs)
-            self.payment_id = f"ORD{self.pk:05d}"
-            self.save(update_fields=['payment_id'])
+            self.payment_id = f"TXN{self.pk:05d}"
+            super().save(update_fields=['payment_id'])
         else:
             super().save(*args, **kwargs)
-
-    def save(self, *args, **kwargs):
-        self.amount = sum(item.product.price * item.quantity for item in self.order_number.orderitems_set.all())
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Payment for {self.order_number.order_id} is {self.amount}"
-        # return self.payment_id
     
 
     
