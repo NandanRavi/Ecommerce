@@ -62,6 +62,7 @@ class Product(models.Model):
     product_name = models.CharField(max_length=30)
     product_image = models.ImageField(null=True, blank=True)
     price = models.FloatField()
+    description = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)

@@ -1,10 +1,8 @@
-from django.shortcuts import render
-from django.views import View
-from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-import json
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import CustomUserForm, CustomerForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser
 # Create your views here.
 
@@ -14,70 +12,49 @@ def homePage(request):
     context = {}
     return render(request, "base/home.html", context)
 
-# Register View
-@method_decorator(csrf_exempt, name="dispatch")
-class RegisterView(View):
-    def get(self, request):
-        return JsonResponse({"message": "Get Method not allowed!!!"}, status=400)
 
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-        
-        name = data.get("name")
-        email = data.get("email")
-        password = data.get("password")
-
-        if not name or not email or not password:
-            return JsonResponse({"error": "Name, Email and Password are required"}, status=400)
-
-        if CustomUser.objects.filter(email=email).exists():
-            return JsonResponse({"error": "Email already registered"}, status=400)
-
-
-        user = CustomUser.objects.create_user(name=name, email=email, password=password)
-        user.save()
-
-        return JsonResponse({"message": "User registered successfully"}, status=201)
-        
-    
-@method_decorator(csrf_exempt, name="dispatch")
-class LoginView(View):
-    def get(self, request):
-        return JsonResponse({"message": "Get Method not allowed!!!"}, status=400)
-
-    def post(self, request):
-        try:
-            try:
-                data = json.loads(request.body)
-            except json.JSONDecodeError:
-                return JsonResponse({"error": "Invalid JSON"}, status=400)
-            email = data.get("email")
-            password = data.get("password")
-            user = authenticate(email=email, password=password)
-
-            if user is not None:
-                login(request, user)
-                return JsonResponse({"message": "Login successful"}, status=200)
+def registerUser(request):
+    form = CustomUserForm()
+    if request.method == "POST":
+        form = CustomUserForm(request.POST)
+        if form.is_valid():
+            email = request.POST.get("email")
+            if CustomUser.objects.filter(email=email).exists():
+                form.add_error("Email", "User already Exist")
             else:
-                return JsonResponse({"error": "Invalid credentials"}, status=401)
-        except Exception as e:
-            print("Error during login attempt:", e)
-            return JsonResponse({"error": "An error occurred during login"}, status=500)
-        
-@method_decorator(csrf_exempt, name="dispatch")
-class LogoutView(View):
-    def get(self, request):
-        return JsonResponse({"message": "Get Method not allowed!!!"}, status=400)
+                user = form.save(commit=False)
+                user.save()
+                login(request, user)
+                messages.success(request, "User created Successfully")
+                return redirect("home")
+        else:
+            messages.success(request, "An error has occur during registration")
+    context = {"form":form}
+    return render(request, "base/register.html", context)
 
-    def post(self, request):
+def loginUser(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method =='POST':
+        email = request.POST['Email']
+        password = request.POST['Password']
+
         try:
-            if not request.user.is_authenticated:
-                return JsonResponse({"error": "Please Login!!!"}, status=401)
+            user = CustomUser.objects.get(email=email)
+        except:
+            messages.error(request, "UserName doesn't exist")
 
-            logout(request)
-            return JsonResponse({"message": "Logged out successfully"}, status=200)
-        except Exception as e:
-            return JsonResponse({"message":e}, status=400)
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("home")
+        else:
+            messages.error(request, 'Username or Password is incorrect')
+    return render(request, "base/login.html",)
+
+
+def logoutUser(request):
+    logout(request)
+    messages.error(request, "User was logged out!")
+    return redirect('login')

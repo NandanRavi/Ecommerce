@@ -7,16 +7,14 @@
 <!-- login form -->
 <form action="" method="POST" class="form auth__form">
     {% csrf_token %}
-    <!-- Input:Username -->
     <div>
-        <label for="">Username: </label>
-        <input type="text" name="Username" placeholder="Enter your username..."/>
+        <label for="">Email: </label>
+        <input type="email" name="Email" placeholder="Enter your email...">
     </div>
     
-    <!-- Input:Password -->
     <div class="form__field">
         <label for="">Password: </label>
-        <input type="password" name="Password" placeholder="••••••••"/>
+        <input type="password" name="Password" placeholder="*******"/>
     </div>
     <div>
         <input type="submit" value="Log In" />
