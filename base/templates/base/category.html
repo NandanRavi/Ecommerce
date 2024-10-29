@@ -10,7 +10,7 @@
             </ul>
         {% endfor %}
     </div>
-{% elif page == "create-category" %}
+{% else %}
     <form method="GET">
         {{ form.as_p }}
         <button type="submit">Create-Category</button>

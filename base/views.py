@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from .forms import CustomUserForm, CustomerForm, CategoryForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser
 # Create your views here.
@@ -105,12 +106,16 @@ def editCustomerAccountView(request):
     return render(request, "base/edit_customer.html", context)
 
 
+def superuser_required(function):
+    return user_passes_test(lambda u: u.is_superuser, login_url='login')(function)
+
 def categoryView(request):
     page = "category"
     category = Category.objects.all()
     context = {"categories":category, "page":page}
     return render(request, "base/category.html", context)
 
+@superuser_required
 def createCategoryView(request):
     page = "create-category"
     form = CategoryForm()
