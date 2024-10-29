@@ -62,6 +62,15 @@ def logoutUser(request):
     return redirect('login')
 
 
+
+# Customer View
+@login_required(login_url="login")
+def customerAccountView(request):
+    user = request.user
+    customer = Customer.objects.get(user=user)
+    context = {"customer":customer}
+    return render(request, "base/customer.html", context)
+
 # Customer Data Creation
 @login_required(login_url="login")
 def createCustomerView(request):
@@ -77,15 +86,6 @@ def createCustomerView(request):
         form = CustomerForm()
     context = {"form": form, "user":user}
     return render(request, "base/create_customer.html", context)
-
-# Customer View
-@login_required(login_url="login")
-def customerAccountView(request):
-    user = request.user
-    customer = Customer.objects.get(user=user)
-    context = {"customer":customer}
-    return render(request, "base/customer.html", context)
-
 
 # Edit Customer
 @login_required(login_url="login")
@@ -106,17 +106,29 @@ def editCustomerAccountView(request):
 
 
 def categoryView(request):
+    page = "category"
+    category = Category.objects.all()
+    context = {"categories":category, "page":page}
+    return render(request, "base/category.html", context)
+
+def createCategoryView(request):
+    page = "create-category"
     form = CategoryForm()
-    if request.method == "POST":
-        form = CategoryForm(request.POST)
-    context = {}
+    if request.method == "GET":
+        form = CategoryForm(request.GET)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.save()
+            return redirect("category")
+    else:
+        form = CategoryForm()
+    context = {"form":form, "page":page}
     return render(request, "base/category.html", context)
 
 
 def subCategoryView(request):
     context = {}
     return render(request, "base/sub_category.html", context)
-
 
 
 def ProductView(request):

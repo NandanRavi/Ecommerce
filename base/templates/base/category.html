@@ -1,5 +1,20 @@
 {% extends "main.html" %}
 {% block content %}
 
+{% if page == "category" %}
+    <div>
+        <h1>Category of Product</h1>
+        {% for category in categories %}
+            <ul>
+                <li>{{category.name}}</li>
+            </ul>
+        {% endfor %}
+    </div>
+{% elif page == "create-category" %}
+    <form method="GET">
+        {{ form.as_p }}
+        <button type="submit">Create-Category</button>
+    </form>
+{% endif %}
 
 {% endblock content %}
