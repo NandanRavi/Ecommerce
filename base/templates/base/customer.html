@@ -1,0 +1,14 @@
+{% extends "main.html" %}
+{% block content %}
+<div>
+    <h2>{{customer.user.name}}</h2>
+    <h3>{{customer.user.email}}</h3>
+    <p>{{customer.contact_number}}</p>
+    <p>{{customer.address}}</p>
+</div>
+<div>
+    <a href="{% url "edit-customer" %}">Edit User</a>
+</div>
+
+
+{% endblock content %}

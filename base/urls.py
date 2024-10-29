@@ -1,11 +1,15 @@
 from django.urls import path
-from .views import homePage, registerUser, loginUser, logoutUser
+from . import views
 
 urlpatterns = [
-    path("", homePage, name="home"),
-    path("register/", registerUser, name="register"),
-    path("login/", loginUser, name="login"),
-    path("logout/", logoutUser, name="logout"),
+    path("", views.homePage, name="home"),
+    path("register/", views.registerUser, name="register"),
+    path("login/", views.loginUser, name="login"),
+    path("logout/", views.logoutUser, name="logout"),
+    
+    path("customer/", views.customerAccountView, name="customer"),
+    path("create-customer/", views.createCustomerView, name="create-customer"),
+    path("edit-customer/", views.editCustomerAccountView, name="edit-customer"),
 ]
 
 

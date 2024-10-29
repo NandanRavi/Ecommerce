@@ -10,7 +10,7 @@ class CustomUserForm(UserCreationForm):
 class CustomerForm(ModelForm):
     class Meta:
         model = Customer
-        fields = ["address", "contact_number"]
+        fields = ["contact_number","address"]
 
 class CategoryForm(ModelForm):
     class Meta:

@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h2>{{customer.user.name}}</h2>
+<h3>{{customer.user.email}}</h3>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Changes</button>
+</form>
+
+{% endblock content %}
