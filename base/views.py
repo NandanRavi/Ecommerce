@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import CustomUserForm, CustomerForm
+from .forms import CustomUserForm, CustomerForm, CategoryForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser
 # Create your views here.
 
@@ -106,6 +106,9 @@ def editCustomerAccountView(request):
 
 
 def categoryView(request):
+    form = CategoryForm()
+    if request.method == "POST":
+        form = CategoryForm(request.POST)
     context = {}
     return render(request, "base/category.html", context)
 
