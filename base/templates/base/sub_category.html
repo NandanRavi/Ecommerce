@@ -1,5 +1,20 @@
 {% extends "main.html" %}
 {% block content %}
 
+{% if page == "sub_category" %}
+    <div>
+        <h1>Total Types of Category of Products</h1>
+        {% for data in sub_categories %}
+            <ul>
+                <li>{{data.sub_category}}</li>
+            </ul>
+        {% endfor %}
+    </div>
+{% else %}
+    <form method="GET">
+        {{ form.as_p }}
+        <button type="submit">Create-Sub-Category</button>
+    </form>
+{% endif %}
 
 {% endblock content %}

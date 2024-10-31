@@ -3,7 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from .forms import CustomUserForm, CustomerForm, CategoryForm
+from .forms import CustomUserForm, CustomerForm, CategoryForm, SubcategoryForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser
 # Create your views here.
 
@@ -115,9 +115,15 @@ def categoryView(request):
     context = {"categories":category, "page":page}
     return render(request, "base/category.html", context)
 
+def singleCategoryView(request, pk):
+    category_item = Category.objects.get(id=pk)
+    subcategory_datas = SubCategory.objects.filter(category=category_item)
+    context = {"category_item":category_item, "subcategory_list":subcategory_datas}
+    return render(request, "base/single_category.html", context)
+
 @superuser_required
 def createCategoryView(request):
-    page = "create-category"
+    page = "create_category"
     form = CategoryForm()
     if request.method == "GET":
         form = CategoryForm(request.GET)
@@ -130,10 +136,30 @@ def createCategoryView(request):
     context = {"form":form, "page":page}
     return render(request, "base/category.html", context)
 
-
 def subCategoryView(request):
-    context = {}
+    page = "sub_category"
+    sub_categories = SubCategory.objects.all()
+    context = {"sub_categories":sub_categories, "page":page}
     return render(request, "base/sub_category.html", context)
+
+
+@superuser_required
+def createSubCategoryView(request, pk):
+    page = "create_sub_category"
+    category = Category.objects.get(id=pk)
+    form = SubcategoryForm()
+    if request.method == "GET":
+        form = SubcategoryForm(request.GET)
+        if form.is_valid():
+            subcategory = form.save(commit=False)
+            subcategory.category = category
+            subcategory.save()
+            return redirect("category")
+    else:
+        form = SubcategoryForm()
+    context = {"form":form, "category":category, "page":page}
+    return render(request, "base/sub_category.html", context)
+
 
 
 def ProductView(request):

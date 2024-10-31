@@ -3,12 +3,15 @@
 
 {% if page == "category" %}
     <div>
-        <h1>Category of Product</h1>
+        <h1>List of Categories</h1>
         {% for category in categories %}
             <ul>
-                <li>{{category.name}}</li>
+                <li><a href="{% url "single-category" category.id %}">{{category.name}}</a></li>
             </ul>
         {% endfor %}
+        {% if request.user.is_superuser %}
+            <li><a href="{% url "create-category" %}">Add-Category</a></li>
+        {% endif %}
     </div>
 {% else %}
     <form method="GET">

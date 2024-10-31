@@ -1,0 +1,21 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div>
+    <h2>{{category_item}} items are here</h2>
+    {% for subdata in subcategory_list %}
+        <ul>
+            <li><a href="#">{{subdata.sub_category}}</a></li>
+        </ul>
+    {% endfor %}
+</div>
+<div>
+    {% if request.user.is_superuser %}
+        <li><a href="#">Add-Sub-Category</a></li>
+    {% endif %}
+</div>
+
+
+
+
+{% endblock content %}

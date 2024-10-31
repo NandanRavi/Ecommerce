@@ -12,7 +12,11 @@ urlpatterns = [
     path("edit-customer/", views.editCustomerAccountView, name="edit-customer"),
 
     path("category/", views.categoryView, name="category"),
-    path("create-category/", views.createCategoryView, name="create-category")
+    path("category/<int:pk>/", views.singleCategoryView, name="single-category"),
+    path("create-category/", views.createCategoryView, name="create-category"),
+
+    path("sub-category/", views.subCategoryView, name="sub-category"),
+    path("category/<int:pk>/add-subcategory/", views.createSubCategoryView, name="create-sub-category"),
 ]
 
 
