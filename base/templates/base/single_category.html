@@ -2,20 +2,17 @@
 {% block content %}
 
 <div>
-    <h2>{{category_item}} items are here</h2>
+    <h2>{{category_item}} items are here Pixel</h2>
     {% for subdata in subcategory_list %}
         <ul>
-            <li><a href="#">{{subdata.sub_category}}</a></li>
+            <li><a href="{% url "single-sub-category" subdata.id%}">{{subdata.sub_category}}</a></li>
         </ul>
     {% endfor %}
 </div>
 <div>
     {% if request.user.is_superuser %}
-        <li><a href="#">Add-Sub-Category</a></li>
+        <li><a href="{% url "create-sub-category" category_item.id %}">Add-Sub-Category</a></li>
     {% endif %}
 </div>
-
-
-
 
 {% endblock content %}

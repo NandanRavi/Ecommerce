@@ -1,0 +1,16 @@
+{% extends "main.html" %}
+{% block content %}
+<div>
+    <h2>{{category}} are here Charizard</h2>
+    {% for product in products %}
+        <ul>
+            <li><a href="{% url "product" product.id %}">{{product.product_name}}</a></li>
+        </ul>
+    {% endfor %}
+    {% if request.user.is_superuser %}
+        <li><a href="{% url "create-product" category.id %}">Add New Product</a></li>
+    {% endif %}
+
+</div>
+
+{% endblock content %}

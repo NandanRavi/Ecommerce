@@ -1,6 +1,23 @@
 {% extends "main.html" %}
 {% block content %}
 
+{% if page == all_products %}
+<div>
+    <h1>List of Products</h1>
+    {% for product in products %}
+    <ul>
+        <li><a href="{% url "product" product.id %}">{{product.product_name}}</a></li>
+    </ul>
+    {% endfor %}
+    
+</div>
 
+{% else %}
+<form method="GET">
+    {{ form.as_p }}
+    <button type="submit">Create Product</button>
+</form>
+
+{% endif %}
 
 {% endblock content %}

@@ -6,7 +6,7 @@
                     <li><a href="{% url "home" %}">One</a></li>
                     <li><a href="{% url "category" %}">Category</a></li>
                     <li><a href="{% url "sub-category" %}">Sub-Category</a></li>
-                    <li><a href="#">Products</a></li>
+                    <li><a href="{% url "products" %}">Products</a></li>
                 {% if request.user.is_authenticated %}
                     <li><a href="{% url 'customer' %}">Customer</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>

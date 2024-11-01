@@ -3,12 +3,12 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from .forms import CustomUserForm, CustomerForm, CategoryForm, SubcategoryForm
+from .forms import CustomUserForm, CustomerForm, CategoryForm, SubcategoryForm, ProductForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser
 # Create your views here.
 
 
-
+# Home Page
 def homePage(request):
     context = {}
     return render(request, "base/home.html", context)
@@ -109,6 +109,7 @@ def editCustomerAccountView(request):
 def superuser_required(function):
     return user_passes_test(lambda u: u.is_superuser, login_url='login')(function)
 
+# Category Related Functions Start
 def categoryView(request):
     page = "category"
     category = Category.objects.all()
@@ -135,13 +136,21 @@ def createCategoryView(request):
         form = CategoryForm()
     context = {"form":form, "page":page}
     return render(request, "base/category.html", context)
+# Category Related Function Ends
 
-def subCategoryView(request):
+
+# Sub-Category Related Function Starts
+def subCategorysView(request):
     page = "sub_category"
     sub_categories = SubCategory.objects.all()
     context = {"sub_categories":sub_categories, "page":page}
     return render(request, "base/sub_category.html", context)
 
+def subCategoryView(request, pk):
+    category = SubCategory.objects.get(id=pk)
+    products = Product.objects.filter(category=category)
+    context = {"category":category,"products":products}
+    return render(request, "base/category_product.html", context)
 
 @superuser_required
 def createSubCategoryView(request, pk):
@@ -159,11 +168,38 @@ def createSubCategoryView(request, pk):
         form = SubcategoryForm()
     context = {"form":form, "category":category, "page":page}
     return render(request, "base/sub_category.html", context)
+# Sub-Category Related Function Ends
 
 
 
-def ProductView(request):
-    context = {}
+# Product Related Function Starts
+def productsView(request):
+    page = "all_products"
+    products = Product.objects.all()
+    context = {"products":products, "page":page}
+    return render(request, "base/products.html", context)
+
+def productView(request, pk):
+    product = Product.objects.get(id=pk)
+    context = {"product":product}
+    return render(request, "base/single_product.html", context)
+
+@superuser_required
+def createProductView(request, pk):
+    page = "create_product"
+    subcategory = SubCategory.objects.get(id=pk)
+    form = ProductForm()
+    if request.method == "GET":
+        form = ProductForm(request.GET)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.category = subcategory
+            product.save()
+            return redirect("products")
+    else:
+        form = ProductForm()
+    context = {"form":form, "subcategory":subcategory, "page":page}
     return render(request, "base/products.html", context)
 
 
+# Product Related Function ends
