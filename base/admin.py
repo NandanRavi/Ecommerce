@@ -5,7 +5,7 @@ from .models import Customer, Product, Category, Order, OrderItems, SubCategory,
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["product_id", "product_name"]
+    list_display = ["product_id", "name"]
     
 class OrderItemsAdmin(admin.ModelAdmin):
     list_display = ["order", "product__product_id"]

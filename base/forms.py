@@ -20,12 +20,12 @@ class CategoryForm(ModelForm):
 class SubcategoryForm(ModelForm):
     class Meta:
         model = SubCategory
-        fields = ["sub_category"]
+        fields = ["name"]
 
 class ProductForm(ModelForm):
     class Meta:
         model = Product
-        fields = ["product_name", "product_image", "price", "description"]
+        fields = ["name", "product_image", "price", "description"]
 
 
 class OrderItemsForm(ModelForm):

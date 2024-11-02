@@ -4,9 +4,9 @@
 {% if page == "sub_category" %}
     <div>
         <h1>Total Types of Category of Products</h1>
-        {% for data in sub_categories %}
+        {% for category in categories %}
             <ul>
-                <li>{{data.sub_category}}</li>
+                <li>{{category.name}}</li>
             </ul>
         {% endfor %}
     </div>

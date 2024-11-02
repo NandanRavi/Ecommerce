@@ -46,20 +46,20 @@ class Category(models.Model):
 
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    sub_category = models.CharField(max_length=20)
+    name = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.sub_category
+        return self.name
     
     
 
 class Product(models.Model):
     category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     product_id = models.CharField(max_length=10, unique=True, editable=False)
-    product_name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30)
     product_image = models.ImageField(null=True, blank=True)
     price = models.FloatField()
     description = models.TextField(null=True)

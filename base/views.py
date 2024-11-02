@@ -112,14 +112,14 @@ def superuser_required(function):
 # Category Related Functions Start
 def categoryView(request):
     page = "category"
-    category = Category.objects.all()
-    context = {"categories":category, "page":page}
+    categories = Category.objects.all()
+    context = {"categories":categories, "page":page}
     return render(request, "base/category.html", context)
 
 def singleCategoryView(request, pk):
-    category_item = Category.objects.get(id=pk)
-    subcategory_datas = SubCategory.objects.filter(category=category_item)
-    context = {"category_item":category_item, "subcategory_list":subcategory_datas}
+    category = Category.objects.get(id=pk)
+    subcategories = SubCategory.objects.filter(category=category)
+    context = {"category":category, "subcategories":subcategories}
     return render(request, "base/single_category.html", context)
 
 @superuser_required
@@ -142,15 +142,15 @@ def createCategoryView(request):
 # Sub-Category Related Function Starts
 def subCategorysView(request):
     page = "sub_category"
-    sub_categories = SubCategory.objects.all()
-    context = {"sub_categories":sub_categories, "page":page}
+    categories = SubCategory.objects.all()
+    context = {"categories":categories, "page":page}
     return render(request, "base/sub_category.html", context)
 
 def subCategoryView(request, pk):
     category = SubCategory.objects.get(id=pk)
     products = Product.objects.filter(category=category)
     context = {"category":category,"products":products}
-    return render(request, "base/category_product.html", context)
+    return render(request, "base/single_sub_category.html", context)
 
 @superuser_required
 def createSubCategoryView(request, pk):
