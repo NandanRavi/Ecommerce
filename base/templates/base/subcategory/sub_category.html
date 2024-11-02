@@ -11,7 +11,8 @@
         {% endfor %}
     </div>
 {% else %}
-    <form method="GET">
+    <form method="POST">
+        {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Create-Sub-Category</button>
     </form>

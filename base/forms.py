@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser, Customer, Category, SubCategory, Product, OrderItems
+from .models import CustomUser, Customer, Category, SubCategory, Product, Order, OrderItems
 
 class CustomUserForm(UserCreationForm):
     class Meta:
@@ -25,12 +25,13 @@ class SubcategoryForm(ModelForm):
 class ProductForm(ModelForm):
     class Meta:
         model = Product
-        fields = ["name", "product_image", "price", "description"]
+        fields = ["name", "product_image", "price", "description", "stock"]
 
 
 class OrderItemsForm(ModelForm):
     class Meta:
         model = OrderItems
         fields = ["quantity"]
+
 
 

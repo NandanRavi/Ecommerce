@@ -1,0 +1,13 @@
+{% extends "main.html" %}
+{% block content %}
+
+<h1>Create Order</h1>
+<h2>{{user}}</h2>
+<h3>{{product.name}}</h3>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create-Product</button>
+</form>
+
+{% endblock content %}

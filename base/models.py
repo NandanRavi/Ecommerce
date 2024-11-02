@@ -57,12 +57,17 @@ class SubCategory(models.Model):
     
 
 class Product(models.Model):
+    STATUS_CHOICES = [
+        ('In-Stock', 'In-Stock'),
+        ('Out-of-Stock', 'Out-of-Stock'),
+    ]
     category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     product_id = models.CharField(max_length=10, unique=True, editable=False)
     name = models.CharField(max_length=30)
     product_image = models.ImageField(null=True, blank=True)
     price = models.FloatField()
     description = models.TextField(null=True)
+    stock = models.CharField(max_length=20, choices=STATUS_CHOICES, default="In-Stock")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -103,8 +108,6 @@ class OrderItems(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
-    
-    
     
 class PaymentDetails(models.Model):
     STATUS_CHOICES = [

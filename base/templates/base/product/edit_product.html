@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+{% block content %}
+<div>
+    <form action="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update-Product</button>
+    </form>
+</div>
+
+
+{% endblock content %}

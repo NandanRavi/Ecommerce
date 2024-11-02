@@ -1,0 +1,29 @@
+{% extends "main.html" %}
+{% block content %}
+
+{% if page == "totalOrders" %}
+<div>
+    <h2>{{user.name}} below are your orders.</h2>
+    {% for order in orders %}
+    <ul>
+        <li><a href="{% url "order" order.id%}">{{order.order_id}}</a></li>
+    </ul>
+    {% endfor %}
+</div>
+
+{% else %}
+
+<div>
+    <h2>{{user.name}} here is your order {{order}}</h2>
+    <div>
+        <h3>Order Id :- {{orderitem.order}}</h3>
+        <h4>Product Name :- {{orderitem.product.name}}</h4>
+        <p>Quantity :- {{orderitem.quantity}}</p>
+        <p>Order Placed at :- {{orderitem.created_at}}</p>
+    </div>
+</div>
+
+{% endif %}
+
+
+{% endblock content %}

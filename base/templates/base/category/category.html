@@ -14,7 +14,8 @@
         {% endif %}
     </div>
 {% else %}
-    <form method="GET">
+    <form method="POST">
+        {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Create-Category</button>
     </form>
