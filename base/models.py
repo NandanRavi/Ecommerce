@@ -97,8 +97,6 @@ class Order(models.Model):
         else:
             super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.order_id
     
 
 class OrderItems(models.Model):

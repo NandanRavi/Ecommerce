@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
+from django.utils import timezone
 from .forms import CustomUserForm, CustomerForm, CategoryForm, SubcategoryForm, ProductForm, OrderItemsForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser
 # Create your views here.
@@ -222,7 +223,7 @@ def editProduct(request, pk):
 def orderView(request):
     page = "totalOrders"
     user = request.user
-    orders = Order.objects.all()
+    orders = Order.objects.filter(deleted_at=None)
     context ={"user":user,"orders":orders, "page":page}
     return render(request, "base/order/order.html", context)
 
@@ -230,6 +231,9 @@ def orderView(request):
 def singleOrderView(request, pk):
     user = request.user
     order = Order.objects.get(id=pk)
+    if order.deleted_at:
+        messages.info(request, "Order is not Available")
+        return redirect("orders")
     orderitem = OrderItems.objects.get(order=order)
     context = {"order":order, "user":user,"orderitem":orderitem}
     return render(request, "base/order/order.html", context)
@@ -264,5 +268,22 @@ def createOrderView(request, pk):
 
 @login_required(login_url="login")
 def deleteOrderView(request, pk):
-    context = {}
-    return render(request, "base/order/delete_order.html", context)
+    order = Order.objects.get(id=pk)
+    id = order.order_id
+    if request.method == "POST":
+        try:
+            order.deleted_at = timezone.now()
+            order.save()
+            messages.success(request, "Order Deleted Successfully!!!!")
+            return redirect("orders")
+        except Order.DoesNotExist:
+            messages.error(request, "Order DoesNotExist....")
+            return redirect("orders")
+    order = Order.objects.filter(id=pk).first()
+    if not order:
+        messages.error(request, "Order does not exist.")
+        return redirect("orders")
+    context = {"object":id}
+    return render(request, "delete.html", context)
+# Order Related Function ends
+

@@ -22,8 +22,9 @@
         <p>Order Placed at :- {{orderitem.created_at}}</p>
     </div>
 </div>
+<div>
+    <a href="{% url 'delete-order' order.id %}?next={{ request.path }}">Delete Order</a>
+</div>
 
 {% endif %}
-
-
 {% endblock content %}

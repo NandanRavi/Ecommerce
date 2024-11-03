@@ -26,7 +26,8 @@ urlpatterns = [
 
     path("orders/", views.orderView, name="orders"),
     path("orders/<int:pk>/", views.singleOrderView, name="order"),
-    path("create-order/<int:pk>/", views.createOrderView, name="create-order")
+    path("create-order/<int:pk>/", views.createOrderView, name="create-order"),
+    path("delete-order/<int:pk>/", views.deleteOrderView, name="delete-order"),
 ]
 
 

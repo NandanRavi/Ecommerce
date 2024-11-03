@@ -6,9 +6,12 @@ from .models import Customer, Product, Category, Order, OrderItems, SubCategory,
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ["product_id", "name"]
-    
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ["order_id", "deleted_at"]
+
 class OrderItemsAdmin(admin.ModelAdmin):
-    list_display = ["order", "product__product_id"]
+    list_display = ["order", "product__product_id", "deleted_at"]
 
 class PaymentDetailsAdmin(admin.ModelAdmin):
     list_display = ["order_number", "payment_id", "amount", "status"]
@@ -16,7 +19,7 @@ class PaymentDetailsAdmin(admin.ModelAdmin):
 admin.site.register(Customer)
 admin.site.register(CustomUser)
 admin.site.register(Category)
-admin.site.register(Order)
+admin.site.register(Order, OrderAdmin)
 admin.site.register(SubCategory)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(OrderItems, OrderItemsAdmin)
