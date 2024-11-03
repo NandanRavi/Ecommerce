@@ -205,16 +205,14 @@ def createProductView(request, pk):
 @superuser_required
 def editProduct(request, pk):
     product = Product.objects.get(id=pk)
-    form = ProductForm()
+    form = ProductForm(instance=product)
     if request.method == "POST":
         form = ProductForm(request.POST, instance=product)
         if form.is_valid():
             form.save()
-            return redirect("products")
-    else:
-        form = ProductForm(instance=product)
+            return redirect("category")
     
-    context = {"form":form, "product":product}
+    context = {"form": form, "product": product}
     return render(request, "base/product/edit_product.html", context)
 # Product Related Function ends
 
@@ -242,6 +240,9 @@ def createOrderView(request, pk):
     custom_user = request.user
     user = Customer.objects.get(user=custom_user)
     product = Product.objects.get(id=pk)
+    if product.stock == "Out-of-Stock":
+        messages.warning(request, "Product is not available for order")
+        return redirect("home")
     if request.method == "POST":
         form = OrderItemsForm(request.POST)
         if form.is_valid():
@@ -253,8 +254,15 @@ def createOrderView(request, pk):
                 order_form.order = order
                 order_form.product = product
                 order_form.save()
-                return redirect("home")
+                messages.success(request, "Order is placed.....")
+                return redirect("products")
     else:
         form = OrderItemsForm()
     context = {"form":form, "user":user, "product":product}
     return render(request, "base/order/create_order.html", context)
+
+
+@login_required(login_url="login")
+def deleteOrderView(request, pk):
+    context = {}
+    return render(request, "base/order/delete_order.html", context)

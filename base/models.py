@@ -67,6 +67,7 @@ class Product(models.Model):
     product_image = models.ImageField(null=True, blank=True)
     price = models.FloatField()
     description = models.TextField(null=True)
+    quantity = models.CharField(max_length=10, null=True, blank=True)
     stock = models.CharField(max_length=20, choices=STATUS_CHOICES, default="In-Stock")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
