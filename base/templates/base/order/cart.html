@@ -1,0 +1,25 @@
+{% extends "main.html" %}
+{% block content %}
+{% if page == "all_carts" %}
+<div>
+    {% for cart in carts %}
+        <h3>Product you're added:- <a href="{% url "cart-view" cart.id %}">{{cart.product.name}}</a></h3>
+    {% endfor %}
+</div>
+{% else %}
+<div>
+    <h3>Name of Product {{cart.product.name}}</h3>
+    <p>Total quantity of product:- {{cart.quantity}}</p>
+    <p>Cart created at:- {{cart.created_at}}</p>
+</div>
+<div>
+    <a href="{% url 'delete-cart' cart.id %}?next={{ request.path }}">Delete-Cart</a>----
+    <a href="#">Buy</a>
+    {% comment %} <a href="{% url "create-order" product.id %}">Buy</a> {% endcomment %}
+</div>
+
+{% endif %}
+
+
+
+{% endblock content %}

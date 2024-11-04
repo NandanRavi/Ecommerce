@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
 from django.utils import timezone
 from .forms import CustomUserForm, CustomerForm, CategoryForm, SubcategoryForm, ProductForm, OrderItemsForm
-from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser
+from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser, Cart
+from .utils import superuser_required
 # Create your views here.
 
 
@@ -107,8 +107,6 @@ def editCustomerAccountView(request):
     return render(request, "base/customer/edit_customer.html", context)
 
 
-def superuser_required(function):
-    return user_passes_test(lambda u: u.is_superuser, login_url='login')(function)
 
 # Category Related Functions Start
 def categoryView(request):
@@ -218,7 +216,51 @@ def editProduct(request, pk):
 # Product Related Function ends
 
 
-# Order Related Function ends
+# Cart Related Function starts
+@login_required(login_url="login")
+def cartsView(request):
+    page = "all_carts"
+    carts = Cart.objects.all()
+    context = {"carts":carts, "page":page}
+    return render(request, "base/order/cart.html", context)
+
+@login_required(login_url="login")
+def cartView(request, pk):
+    page = "single_cart"
+    cart = Cart.objects.get(id=pk)
+    context = {"page":page, "cart":cart}
+    return render(request, "base/order/cart.html", context)
+
+
+@login_required(login_url="login")
+def createCartView(request, pk):
+    user = request.user
+    user = Customer.objects.get(user=user)
+    context = {}
+    return render(request, "base/order/create_update_cart.html", context)
+
+
+
+@login_required(login_url="login")
+def deleteCartView(request, pk):
+    cart = Cart.objects.get(id=pk)
+    if request.method == "POST":
+        try:
+            cart.deleted_at = timezone.now()
+            cart.save()
+            messages.success(request, "Order Deleted Successfully!!!!")
+            return redirect("orders")
+        except Cart.DoesNotExist:
+            messages.error(request, "Order DoesNotExist....")
+            return redirect("orders")
+    cart = Cart.objects.filter(id=pk).first()
+    if not cart:
+        messages.error(request, "Order does not exist.")
+        return redirect("orders")
+    context = {"object":id}
+    return render(request, "delete.html", context)
+
+# Order Related Function Starts
 @login_required(login_url="login")
 def orderView(request):
     page = "totalOrders"
@@ -286,4 +328,6 @@ def deleteOrderView(request, pk):
     context = {"object":id}
     return render(request, "delete.html", context)
 # Order Related Function ends
+
+
 

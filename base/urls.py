@@ -24,6 +24,10 @@ urlpatterns = [
     path("create-product/<int:pk>/", views.createProductView, name="create-product"),
     path("edit-product/<int:pk>/", views.editProduct, name="edit-product"),
 
+    path("carts/", views.cartsView, name="carts"),
+    path("cart/<int:pk>/", views.cartView, name="cart-view"),
+    path("delete-cart/<int:pk>/", views.deleteCartView, name="delete-cart"),
+
     path("orders/", views.orderView, name="orders"),
     path("orders/<int:pk>/", views.singleOrderView, name="order"),
     path("create-order/<int:pk>/", views.createOrderView, name="create-order"),
