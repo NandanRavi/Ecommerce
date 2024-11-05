@@ -22,7 +22,7 @@ def registerUser(request):
         if form.is_valid():
             email = request.POST.get("email")
             if CustomUser.objects.filter(email=email).exists():
-                form.add_error("Email", "User already Exist")
+                messages.error(request, "User with this email is already registered!!!")
             else:
                 user = form.save(commit=False)
                 user.save()
@@ -30,10 +30,9 @@ def registerUser(request):
                 messages.success(request, "User created Successfully")
                 return redirect("create-customer")
         else:
-            messages.success(request, "An error has occur during registration")
+            messages.error(request, "Both Password should be same and according to given conditions")
     context = {"form":form}
     return render(request, "base/customer/register.html", context)
-
 
 # Customer Login
 def loginUser(request):
