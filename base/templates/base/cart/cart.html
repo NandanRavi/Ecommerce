@@ -13,9 +13,9 @@
     <p>Cart created at:- {{cart.created_at}}</p>
 </div>
 <div>
+    <a href="{% url "edit-cart" cart.id %}">Edit-Cart</a>----
     <a href="{% url 'delete-cart' cart.id %}?next={{ request.path }}">Delete-Cart</a>----
-    <a href="#">Buy</a>
-    {% comment %} <a href="{% url "create-order" product.id %}">Buy</a> {% endcomment %}
+    <a href="{% url "create-order" cart.product.id %}">Buy</a>
 </div>
 
 {% endif %}

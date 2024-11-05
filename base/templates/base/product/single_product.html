@@ -6,7 +6,7 @@
     <p>Product's Description:- {{product.description}}</p>
 </div>
 <div>
-    <a href="#">Add to Cart</a>-----
+    <a href="{% url "create-cart" product.id %}">Add to Cart</a>-----
     <a href="{% url "create-order" product.id %}">Place Order</a>
 </div>
 

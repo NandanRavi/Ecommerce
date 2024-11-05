@@ -3,7 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .forms import CustomUserForm, CustomerForm, CategoryForm, SubcategoryForm, ProductForm, OrderItemsForm
+from .forms import CustomUserForm, CustomerForm, CartForm, CategoryForm, SubcategoryForm, ProductForm, OrderItemsForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser, Cart
 from .utils import superuser_required
 # Create your views here.
@@ -52,6 +52,7 @@ def loginUser(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
+            messages.success(request, "Login Successfully!!!")
             return redirect("customer")
         else:
             messages.error(request, 'Email or Password is incorrect')
@@ -83,6 +84,7 @@ def createCustomerView(request):
             customer = form.save(commit=False)
             customer.user = user
             customer.save()
+            messages.success(request, "Customer Created Successfully")
             return redirect("customer")
     else:
         form = CustomerForm()
@@ -99,6 +101,7 @@ def editCustomerAccountView(request):
         form = CustomerForm(request.POST, instance=customer)
         if form.is_valid():
             form.save()
+            messages.success(request, "Customer Data Edited Successfully")
             return redirect("customer")
     else:
         form = CustomerForm(instance=customer)
@@ -130,6 +133,7 @@ def createCategoryView(request):
         if form.is_valid():
             category = form.save(commit=False)
             category.save()
+            messages.success(request, "Category Created Successfully")
             return redirect("category")
     else:
         form = CategoryForm()
@@ -162,6 +166,7 @@ def createSubCategoryView(request, pk):
             subcategory = form.save(commit=False)
             subcategory.category = category
             subcategory.save()
+            messages.success(request, "Sub-Category Created Successfully")
             return redirect("category")
     else:
         form = SubcategoryForm()
@@ -194,6 +199,7 @@ def createProductView(request, pk):
             product = form.save(commit=False)
             product.category = subcategory
             product.save()
+            messages.success(request, "Product Created Successfully!!!")
             return redirect("products")
     else:
         form = ProductForm()
@@ -220,25 +226,56 @@ def editProduct(request, pk):
 @login_required(login_url="login")
 def cartsView(request):
     page = "all_carts"
-    carts = Cart.objects.all()
+    user = request.user
+    customer = Customer.objects.get(user=user)
+    carts = Cart.objects.filter(customer=customer, deleted_at=None)
     context = {"carts":carts, "page":page}
-    return render(request, "base/order/cart.html", context)
+    return render(request, "base/cart/cart.html", context)
 
 @login_required(login_url="login")
 def cartView(request, pk):
     page = "single_cart"
-    cart = Cart.objects.get(id=pk)
+    user = request.user
+    customer = Customer.objects.get(user=user)
+    cart = Cart.objects.get(customer=customer, id=pk, deleted_at=None)
     context = {"page":page, "cart":cart}
-    return render(request, "base/order/cart.html", context)
+    return render(request, "base/cart/cart.html", context)
 
 
 @login_required(login_url="login")
 def createCartView(request, pk):
+    page = "create_cart"
     user = request.user
-    user = Customer.objects.get(user=user)
-    context = {}
-    return render(request, "base/order/create_update_cart.html", context)
+    customer = Customer.objects.get(user=user)
+    product = Product.objects.get(id=pk)
 
+    if request.method == "POST":
+        form = CartForm(request.POST)
+        if form.is_valid():
+            cart_form = form.save(commit=False)
+            cart_form.customer = customer
+            cart_form.product = product
+            cart_form.save()
+            messages.success(request, "Cart is created successfully...")
+            return redirect("carts")
+    else:
+        form = CartForm()
+
+    context = {"user": user, "form": form, "product": product, "page": page}
+    return render(request, "base/cart/create_update_cart.html", context)
+
+@login_required(login_url="login")
+def editCartView(request, pk):
+    page="edit_cart"
+    cart = Cart.objects.get(id=pk)
+    form = CartForm(instance=cart)
+    if request.method == "POST":
+        form = CartForm(request.POST, instance=cart)
+        if form.is_valid():
+            form.save()
+            return redirect("carts")
+    context = {"page":page, "form":form}
+    return render(request, "base/cart/create_update_cart.html", context)
 
 
 @login_required(login_url="login")
@@ -259,20 +296,25 @@ def deleteCartView(request, pk):
         return redirect("orders")
     context = {"object":id}
     return render(request, "delete.html", context)
+# Cart Related Function ends
+
+
 
 # Order Related Function Starts
 @login_required(login_url="login")
 def orderView(request):
     page = "totalOrders"
     user = request.user
-    orders = Order.objects.filter(deleted_at=None)
+    customer = Customer.objects.get(user=user)
+    orders = Order.objects.filter(customer=customer, deleted_at=None)
     context ={"user":user,"orders":orders, "page":page}
     return render(request, "base/order/order.html", context)
 
 @login_required(login_url="login")
 def singleOrderView(request, pk):
     user = request.user
-    order = Order.objects.get(id=pk)
+    customer = Customer.objects.get(user=user)
+    order = Order.objects.get(customer=customer, id=pk, deleted_at=None)
     if order.deleted_at:
         messages.info(request, "Order is not Available")
         return redirect("orders")
