@@ -3,9 +3,11 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
+from django.conf import settings
 from .forms import CustomUserForm, CustomerForm, CartForm, CategoryForm, SubcategoryForm, ProductForm, OrderItemsForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser, Cart
 from .utils import superuser_required
+import re, urllib.parse, requests
 # Create your views here.
 
 
@@ -18,9 +20,13 @@ def homePage(request):
 def registerUser(request):
     form = CustomUserForm()
     if request.method == "POST":
+        email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\.(com|in)$"
         form = CustomUserForm(request.POST)
         if form.is_valid():
             email = request.POST.get("email")
+            if not re.match(email_regex, email):
+                messages.error(request, "Email should be from gmail, yahoo, myyahoo and domain should be .com or .in")
+                return redirect("register")
             if CustomUser.objects.filter(email=email).exists():
                 messages.error(request, "User with this email is already registered!!!")
             else:
@@ -56,6 +62,68 @@ def loginUser(request):
         else:
             messages.error(request, 'Email or Password is incorrect')
     return render(request, "base/customer/login.html",)
+
+# Login Google
+def loginGoogleView(request):
+    google_auth_endpoint = "https://accounts.google.com/o/oauth2/v2/auth"
+    scope = "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email"
+    redirect_uri = settings.GOOGLE_REDIRECT_URI
+    client_id = settings.GOOGLE_CLIENT_ID
+    state = urllib.parse.urlencode({'ip': request.META.get('REMOTE_ADDR', '')})
+    auth_url = f"{google_auth_endpoint}?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}&state={state}"
+    return redirect(auth_url)
+
+
+# Oauth2callback
+def oauth2callback(request):
+    code = request.GET.get('code')
+    state = request.GET.get('state')
+
+    if not code:
+        messages.error(request, "Authorization code not provided.")
+        return redirect("login")
+
+    state_params = urllib.parse.parse_qs(state) if state else {}
+    custom_data = state_params.get('ip', [None])[0]
+
+    token_url = "https://oauth2.googleapis.com/token"
+    data = {
+        'code': code,
+        'client_id': settings.GOOGLE_CLIENT_ID,
+        'client_secret': settings.GOOGLE_CLIENT_SECRET,
+        'redirect_uri': settings.GOOGLE_REDIRECT_URI,
+        'grant_type': 'authorization_code',
+    }
+    token_response = requests.post(token_url, data=data)
+    token_data = token_response.json()
+
+    if 'access_token' not in token_data:
+        messages.error(request, "Failed to obtain access token from Google.")
+        return redirect("login")
+
+    access_token = token_data['access_token']
+
+    userinfo_url = f"https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token={access_token}"
+    userinfo_response = requests.get(userinfo_url)
+    userinfo = userinfo_response.json()
+
+    email = userinfo.get('email')
+    name = userinfo.get('name')
+
+    if not email:
+        messages.error(request, "Failed to retrieve user information from Google.")
+        return redirect("login")
+
+    user, created = CustomUser.objects.get_or_create(email=email, defaults={'name': name})
+
+    if created:
+        messages.success(request, "User created successfully.")
+    else:
+        messages.success(request, "Login successful.")
+
+    login(request, user)
+    return redirect("customer" if created else "create-customer")
+
 
 # Customer Logout
 def logoutUser(request):
@@ -369,6 +437,7 @@ def deleteOrderView(request, pk):
     context = {"object":id}
     return render(request, "delete.html", context)
 # Order Related Function ends
+
 
 
 

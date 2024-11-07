@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, Cart
+from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, Cart, CustomUser
 # Register your models here.
 
 
@@ -20,6 +20,7 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ["customer__user__id", "product__name", "quantity", "deleted_at"]
 
 admin.site.register(Customer)
+admin.site.register(CustomUser)
 admin.site.register(Category)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(SubCategory)

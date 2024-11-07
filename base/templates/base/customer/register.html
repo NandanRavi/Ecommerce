@@ -5,22 +5,31 @@
 <div>
     <h3>Register an Account</h3>
 </div>
-<form method="POST" action="{% url 'register' %}">
-    {% csrf_token %}
-    <!-- Input:Text -->
-    {% for field in form %}
+<div>
     <div>
-        <label for="">{{field.label}}</label>
-        {{field}}
-        {% if field.help_text %}
-            <small>{{field.help_text}}</small>
-        {% endif %}
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+            <!-- Input:Text -->
+            {% for field in form %}
+            <div>
+                <label for="">{{field.label}}</label>
+                {{field}}
+                {% if field.help_text %}
+                    <small>{{field.help_text}}</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <div>
+                <input type="submit" value="Sign In" />
+            </div>
+        </form>
     </div>
-    {% endfor %}
     <div>
-        <input type="submit" value="Sign In" />
+        <a href="#">Register via Google</a>
     </div>
-</form>
+</div>
+
+
 <div>
     <p>Already have an Account?</p>
     <a href="{% url 'login' %}">Log In</a>

@@ -5,22 +5,29 @@
     <h3>Account Login</h3>
 </div>
 <!-- login form -->
-<form action="" method="POST" class="form auth__form">
-    {% csrf_token %}
-    <div>
-        <label for="">Email: </label>
+<div>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div>
+            <label for="">Email: </label>
         <input type="email" name="Email" placeholder="Enter your email...">
-    </div>
-    
-    <div class="form__field">
-        <label for="">Password: </label>
-        <input type="password" name="Password" placeholder="*******"/>
-    </div>
+        </div>
+        
+        <div>
+            <label for="">Password: </label>
+            <input type="password" name="Password" placeholder="*******"/>
+        </div>
+        <div>
+            <input type="submit" value="Log In" />
+        </div>
+    </form>
     <div>
-        <input type="submit" value="Log In" />
+        <a href="{% url "google-login" %}">Login via Google</a>
     </div>
-</form>
-<div class="auth__alternative">
+</div>
+
+
+<div>
     <p>Don't have an Account?</p>
     <a href="{% url 'register' %}">Sign Up</a>
 </div>

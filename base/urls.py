@@ -5,6 +5,8 @@ urlpatterns = [
     path("", views.homePage, name="home"),
     path("register/", views.registerUser, name="register"),
     path("login/", views.loginUser, name="login"),
+    path("google-login/", views.loginGoogleView, name="google-login"),
+    path('oauth2callback', views.oauth2callback, name='oauth2callback'),
     path("logout/", views.logoutUser, name="logout"),
 
     path("customer/", views.customerAccountView, name="customer"),

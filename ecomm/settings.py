@@ -120,7 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-MEDIA_URL = 'media/'
+MEDIA_URL = ''
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
@@ -134,3 +134,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", 'static' )
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+GOOGLE_CLIENT_ID = '27758459851-ctgr4nie9oksejkfgi4nnhh525hvgtmt.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'
+GOOGLE_REDIRECT_URI = 'http://127.0.0.1:8000/oauth2callback'

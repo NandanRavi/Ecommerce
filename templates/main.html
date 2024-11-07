@@ -1,23 +1,27 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "styles/main.css" %}">
     <title>E-Commerce</title>
 </head>
 <body>
-    {% include "navbar.html" %}
-    {% if messages %}
-    <ul>
-        {% for message in messages %}
-        <p>
-            {{message}}
-        </p>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% block content %}
-    
-    {% endblock content %}
+    <div class="container">
+        {% include "navbar.html" %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <p>
+                {{message}}
+            </p>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% block content %}
+        
+        {% endblock content %}
+    </div>
 </body>
 </html>
