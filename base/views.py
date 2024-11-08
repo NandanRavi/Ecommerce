@@ -20,25 +20,30 @@ def homePage(request):
 def registerUser(request):
     form = CustomUserForm()
     if request.method == "POST":
+        email = request.POST.get("email")
+        password1 = request.POST.get("password1")
+        password2 = request.POST.get("password2")
         email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\.(com|in)$"
         form = CustomUserForm(request.POST)
+        if not re.match(email_regex, email):
+            messages.error(request, "Enter Correct Email!!!")
+            return redirect("register")
+        if CustomUser.objects.filter(email=email).exists():
+            messages.error(request, "User with this email is already registered!!!")
+        if password1 != password2:
+            messages.error(request, "Both passwords should be the same!")
+            return redirect("register")
         if form.is_valid():
-            email = request.POST.get("email")
-            if not re.match(email_regex, email):
-                messages.error(request, "Email should be from gmail, yahoo, myyahoo and domain should be .com or .in")
-                return redirect("register")
-            if CustomUser.objects.filter(email=email).exists():
-                messages.error(request, "User with this email is already registered!!!")
-            else:
-                user = form.save(commit=False)
-                user.save()
-                login(request, user)
-                messages.success(request, "User created Successfully")
-                return redirect("create-customer")
-        else:
-            messages.error(request, "Both Password should be same and according to given conditions")
+            user = form.save(commit=False)
+            user.save()
+            login(request, user)
+            messages.success(request, "User created Successfully")
+            return redirect("create-customer")
+    else:
+        form = CustomUserForm()
     context = {"form":form}
     return render(request, "base/customer/register.html", context)
+
 
 # Customer Login
 def loginUser(request):
@@ -117,6 +122,7 @@ def oauth2callback(request):
     user, created = CustomUser.objects.get_or_create(email=email, defaults={'name': name})
 
     if created:
+        Customer.objects.create(user=user)
         messages.success(request, "User created successfully.")
     else:
         messages.success(request, "Login successful.")
@@ -137,8 +143,13 @@ def logoutUser(request):
 @login_required(login_url="login")
 def customerAccountView(request):
     user = request.user
-    customer = Customer.objects.get(user=user)
-    context = {"customer":customer}
+    try:
+        customer = Customer.objects.get(user=user)
+    except Customer.DoesNotExist:
+        messages.error(request, "No customer account found. Please complete your profile.")
+        return redirect("customer")
+
+    context = {"customer": customer}
     return render(request, "base/customer/customer.html", context)
 
 # Customer Data Creation
