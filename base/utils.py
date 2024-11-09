@@ -24,10 +24,11 @@ def send_verification_email(user):
     base_url = "http://127.0.0.1:8000/"
     verification_url = base_url + reverse('verify_email', kwargs={'token': token})
     message = f'Hello {user.name},\n\nPlease click the link below to verify your email address:\n\n{verification_url}\n\nThank you!'
+    from_email = f"EC <{settings.EMAIL_HOST_USER}>"
     send_mail(
         subject,
         message,
-        settings.EMAIL_HOST_USER,
+        from_email,
         [user.email],
         fail_silently=False,
     )

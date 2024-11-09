@@ -6,7 +6,7 @@ from .manager import UserManager
 
 class CustomUser(AbstractUser):
     name = models.CharField(max_length=30, blank=True, null=True)
-    email = models.EmailField(max_length=50, unique=True)
+    email = models.EmailField(max_length=500, unique=True)
     username = models.CharField(max_length=10, blank=True, null=True)
     verification_token = models.CharField(max_length=255, blank=True, null=True)
     email_verified = models.BooleanField(default=False)

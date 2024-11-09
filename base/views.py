@@ -38,10 +38,6 @@ def registerUser(request):
             send_verification_email(user)
             messages.success(request, "Verification email sent. Please verify your email.")
             return redirect("home")
-            # user.save()
-            # login(request, user)
-            # messages.success(request, "User created Successfully")
-            # return redirect("create-customer")
     else:
         form = CustomUserForm()
     context = {"form":form}
@@ -53,7 +49,7 @@ def emailVerificationView(request, token):
         login(request, user)
         messages.success(request, "Email verified. You are now logged in.")
         send_welcome_email(user)
-        return redirect("login")
+        return redirect("create-customer")
     else:
         messages.error(request, "Invalid verification token.")
         return redirect("login")
