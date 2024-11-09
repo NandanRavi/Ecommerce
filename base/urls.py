@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path("", views.homePage, name="home"),
     path("register/", views.registerUser, name="register"),
+    path('email-verification/<str:token>/', views.emailVerificationView, name='verify_email'),
     path("login/", views.loginUser, name="login"),
     path("google-login/", views.loginGoogleView, name="google-login"),
     path('oauth2callback', views.oauth2callback, name='oauth2callback'),

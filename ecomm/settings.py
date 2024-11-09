@@ -139,3 +139,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 GOOGLE_CLIENT_ID = '27758459851-ctgr4nie9oksejkfgi4nnhh525hvgtmt.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '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'
 GOOGLE_REDIRECT_URI = 'http://127.0.0.1:8000/oauth2callback'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "ravimonu9661@gmail.com"
+EMAIL_HOST_PASSWORD = "wvlfalqrlblwyeex "

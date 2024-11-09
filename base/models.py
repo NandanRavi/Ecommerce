@@ -8,6 +8,8 @@ class CustomUser(AbstractUser):
     name = models.CharField(max_length=30, blank=True, null=True)
     email = models.EmailField(max_length=50, unique=True)
     username = models.CharField(max_length=10, blank=True, null=True)
+    verification_token = models.CharField(max_length=255, blank=True, null=True)
+    email_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)

@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.conf import settings
 from .forms import CustomUserForm, CustomerForm, CartForm, CategoryForm, SubcategoryForm, ProductForm, OrderItemsForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser, Cart
-from .utils import superuser_required
+from .utils import superuser_required, send_verification_email, verify_email, send_welcome_email
 import re, urllib.parse, requests
 # Create your views here.
 
@@ -35,14 +35,28 @@ def registerUser(request):
             return redirect("register")
         if form.is_valid():
             user = form.save(commit=False)
-            user.save()
-            login(request, user)
-            messages.success(request, "User created Successfully")
-            return redirect("create-customer")
+            send_verification_email(user)
+            messages.success(request, "Verification email sent. Please verify your email.")
+            return redirect("home")
+            # user.save()
+            # login(request, user)
+            # messages.success(request, "User created Successfully")
+            # return redirect("create-customer")
     else:
         form = CustomUserForm()
     context = {"form":form}
     return render(request, "base/customer/register.html", context)
+
+def emailVerificationView(request, token):
+    user = verify_email(token)
+    if user:
+        login(request, user)
+        messages.success(request, "Email verified. You are now logged in.")
+        send_welcome_email(user)
+        return redirect("login")
+    else:
+        messages.error(request, "Invalid verification token.")
+        return redirect("login")
 
 
 # Customer Login
@@ -56,8 +70,12 @@ def loginUser(request):
 
         try:
             user = CustomUser.objects.get(email=email)
-        except:
+            if not user.email_verified:
+                messages.error(request, "Please verify your email before logging in.")
+                return redirect('verify_email')
+        except CustomUser.DoesNotExist:
             messages.error(request, "Email doesn't exist")
+            return redirect("login")
 
         user = authenticate(request, email=email, password=password)
         if user is not None:
