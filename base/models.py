@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from datetime import timedelta
 from .manager import UserManager
 # Create your models here.
 
@@ -10,6 +11,7 @@ class CustomUser(AbstractUser):
     username = models.CharField(max_length=10, blank=True, null=True)
     verification_token = models.CharField(max_length=255, blank=True, null=True)
     email_verified = models.BooleanField(default=False)
+    token_created_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -23,6 +25,11 @@ class CustomUser(AbstractUser):
 
     class Meta:
         ordering = ["id"]
+
+    def is_token_valid(self):
+        if self.verification_token and self.token_created_at:
+            return timezone.now() < self.token_created_at + timedelta(minutes=10)
+        return False
 
 class Customer(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

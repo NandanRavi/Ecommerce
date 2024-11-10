@@ -43,6 +43,7 @@ def registerUser(request):
     context = {"form":form}
     return render(request, "base/customer/register.html", context)
 
+# Email Verification
 def emailVerificationView(request, token):
     user = verify_email(token)
     if user:
@@ -136,13 +137,17 @@ def oauth2callback(request):
     user, created = CustomUser.objects.get_or_create(email=email, defaults={'name': name})
 
     if created:
-        Customer.objects.create(user=user)
-        messages.success(request, "User created successfully.")
+        send_verification_email(user)
+        messages.success(request, "Verification email sent. Please verify your email.")
+        return redirect("login")
     else:
         messages.success(request, "Login successful.")
-
-    login(request, user)
-    return redirect("customer" if created else "create-customer")
+    if user.email_verified:
+        login(request, user)
+        return redirect("customer")
+    else:
+        messages.warning(request, "Your email is not verified. Please check your inbox.")
+        return redirect("login")
 
 
 # Customer Logout
