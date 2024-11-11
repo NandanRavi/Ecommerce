@@ -1,7 +1,9 @@
 {% extends "main.html" %}
+{% load static %}
 {% block content %}
 <div>
     <h2>{{product.name}}</h2>
+    <img src="{{product.imageURL}}" alt="{{product.name}}">
     <h3>Product's Price = {{product.price}}</h3>
     <p>Product's Description:- {{product.description}}</p>
 </div>

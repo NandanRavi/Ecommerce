@@ -1,0 +1,26 @@
+{% extends "main.html" %}
+{% block content %}
+
+{% if pk == None %}
+<div>
+    {% for transaction in transactions %}
+        <ul>
+            <li><a href="{% url "transaction" transaction.id %}">{{transaction.payment_id}}</a></li>
+        </ul>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div>
+    <h1>{{transaction.order_number.customer}}</h1>
+    <h2>{{transaction.order_number.order_id}}</h2>
+    <h3>{{transaction.payment_id}}</h3>
+    <p>{{transaction.amount}}</p>
+    <p>{{transaction.status}}</p>
+    <p>{{transaction.created_at}}</p>
+</div>
+
+
+
+
+{% endblock content %}

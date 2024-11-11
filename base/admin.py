@@ -8,13 +8,13 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ["product_id", "name"]
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ["order_id", "created_at", "deleted_at"]
+    list_display = ["customer", "order_id", "created_at", "deleted_at"]
 
 class OrderItemsAdmin(admin.ModelAdmin):
     list_display = ["order", "product__product_id", "deleted_at"]
 
 class PaymentDetailsAdmin(admin.ModelAdmin):
-    list_display = ["order_number", "payment_id", "amount", "status"]
+    list_display = ["order_number__customer", "order_number__order_id", "payment_id", "amount", "status"]
 
 class CartAdmin(admin.ModelAdmin):
     list_display = ["customer__user__id", "product__name", "quantity", "deleted_at"]

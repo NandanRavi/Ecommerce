@@ -6,8 +6,10 @@ from django.contrib.auth.decorators import user_passes_test
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.conf import settings
+from django.contrib import messages
 from django.utils import timezone
-
+from django.db import transaction
+from .models import Product, Order, PaymentDetails, OrderItems
 
 def superuser_required(function):
     return user_passes_test(lambda u: u.is_superuser, login_url='login')(function)
@@ -55,8 +57,40 @@ def verify_email(token):
 def send_welcome_email(user):
     subject = "Welcome to EC!"
     message = f"Dear {user.name},\n\nCongratulations! Your account is now active.\n\nWe are glad you are here."
-    from_email = settings.EMAIL_HOST_USER
+    from_email = f"EC <{settings.EMAIL_HOST_USER}>"
     recipient_list = [user.email]
 
     send_mail(subject, message, from_email, recipient_list)
 
+
+@transaction.atomic
+def process_payment_success(payment_id, user):
+    try:
+        payment = PaymentDetails.objects.get(payment_id=payment_id, status="None")
+        order = payment.order_number
+
+        if order.customer != user:
+            return {'status': 'error', 'message': 'Unauthorized access to this payment'}
+        payment.status = 'success'
+        payment.updated_at = timezone.now()
+        payment.save(update_fields=['status', 'updated_at'])
+
+        order_items = OrderItems.objects.filter(order=order)
+        for item in order_items:
+            product = item.product
+            new_quantity = int(product.quantity) - item.quantity
+            product.quantity = max(0, new_quantity)
+
+            if product.quantity == 0:
+                product.stock = 'Out-of-Stock'
+
+            product.updated_at = timezone.now()
+            product.save(update_fields=['quantity', 'stock', 'updated_at'])
+
+        return {'status': 'success', 'message': 'Payment successful and quantities updated'}
+    
+    except PaymentDetails.DoesNotExist:
+        return {'status': 'error', 'message': 'Payment not found or already processed'}
+    
+    except Order.DoesNotExist:
+        return {'status': 'error', 'message': 'Order not found'}

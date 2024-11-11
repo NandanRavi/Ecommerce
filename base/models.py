@@ -90,6 +90,14 @@ class Product(models.Model):
         else:
             super().save(*args, **kwargs)
 
+    @property
+    def imageURL(self):
+        try:
+            url = self.product_image.url
+        except:
+            url = ''
+        return url
+
 class Cart(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     product= models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -128,15 +136,14 @@ class OrderItems(models.Model):
     
 class PaymentDetails(models.Model):
     STATUS_CHOICES = [
-        ('unpaid', 'Unpaid'),
+        ("None", "None"),
         ('success', 'Success'),
         ('failed', 'Failed'),
-        ('pending', 'Pending'),
     ]
     order_number = models.ForeignKey(Order, on_delete=models.CASCADE)
     payment_id = models.CharField(max_length=10, unique=True, editable=False)
     amount = models.FloatField(editable=False)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='unpaid')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="None")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
@@ -153,9 +160,7 @@ class PaymentDetails(models.Model):
 
 # class UserPayment(models.Model):
 #     PAYMENT_STATUS_CHOICES = [
-#         ('initiated', 'Initiated'),
-#         ('processing', 'Processing'),
-#         ('completed', 'Completed'),
+#         ('success', 'Success'),
 #         ('failed', 'Failed'),
 #     ]
     

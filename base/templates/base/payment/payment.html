@@ -1,0 +1,22 @@
+{% extends "main.html" %}
+{% block content %}
+
+{% if message == "success" %}
+<div>
+    <h1>Payment Successful</h1>
+    <p>{{ message }}</p>
+    <a href="{% url 'transaction' %}">View Order History</a>
+</div>
+
+{% else %}
+<div>
+    <h1>Payment Error</h1>
+    <p>{{ message }}</p>
+    <a href="#">Retry Payment</a>
+</div>
+{% endif %}
+
+
+
+
+{% endblock content %}

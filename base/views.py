@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.conf import settings
 from .forms import CustomUserForm, CustomerForm, CartForm, CategoryForm, SubcategoryForm, ProductForm, OrderItemsForm
 from .models import Customer, Product, Category, Order, OrderItems, SubCategory, PaymentDetails, CustomUser, Cart
-from .utils import superuser_required, send_verification_email, verify_email, send_welcome_email
+from .utils import superuser_required, send_verification_email, verify_email, send_welcome_email, process_payment_success
 import re, urllib.parse, requests
 # Create your views here.
 
@@ -144,6 +144,7 @@ def oauth2callback(request):
         messages.success(request, "Login successful.")
     if user.email_verified:
         login(request, user)
+        messages.success(request, "Dear, User Complete Your Profile.")
         return redirect("customer")
     else:
         messages.warning(request, "Your email is not verified. Please check your inbox.")
@@ -291,7 +292,7 @@ def createProductView(request, pk):
     subcategory = SubCategory.objects.get(id=pk)
     form = ProductForm()
     if request.method == "POST":
-        form = ProductForm(request.POST)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save(commit=False)
             product.category = subcategory
@@ -309,7 +310,7 @@ def editProduct(request, pk):
     product = Product.objects.get(id=pk)
     form = ProductForm(instance=product)
     if request.method == "POST":
-        form = ProductForm(request.POST, instance=product)
+        form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
             return redirect("category")
@@ -470,4 +471,36 @@ def deleteOrderView(request, pk):
 
 
 
+# Payment Related Function starts
+@login_required(login_url="login")
+def transactionHistoryView(request, pk=None):
+    if pk:
+        transaction = PaymentDetails.objects.get(id=pk)
+        context = {"transaction":transaction}
+    else:
+        transactions = PaymentDetails.objects.all()
+        context = {"transactions":transactions}
+    return render(request, "base/payment/payment_details.html", context)
 
+
+# @login_required(login_url="login")
+# def createTransactionView(request):
+#     context = {}
+#     return render(request, "base/payment/create_payment.html", context)
+
+@login_required
+def payment_success_view(request, payment_id):
+    try:
+        payment = PaymentDetails.objects.get(payment_id=payment_id, status="None")
+    except PaymentDetails.DoesNotExist:
+        return render(request, 'payment.html', {'message': 'Payment not found or already processed'})
+
+    result = process_payment_success(payment_id, request.user)
+    
+    # Handle response based on the result
+    if result['status'] == 'success':
+        context = {'message': result['message']}
+        return render(request, 'payment.html', context)
+    else:
+        context = {'message': result['message']}
+        return render(request, 'payment.html', context)
